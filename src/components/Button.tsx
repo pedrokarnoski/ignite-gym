@@ -9,8 +9,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-green-700",
-        ghost:
-          "bg-transparent border border-green-500 active:opacity-[0.70] active:bg-gray-500",
+        ghost: "border border-green-500",
       },
       size: {
         default: "h-14 px-4",
@@ -58,7 +57,7 @@ function Button({
   ...props
 }: ButtonProps) {
   return (
-    <TouchableOpacity {...props}>
+    <TouchableOpacity activeOpacity={0.8} {...props}>
       <View className={cn(buttonVariants({ variant, size, className }))}>
         <Text
           className={cn(

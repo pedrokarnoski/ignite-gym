@@ -1,7 +1,10 @@
 import React, { useRef } from "react";
-import { Image, View, Text, KeyboardAvoidingView } from "react-native";
+import { Image, View, Text } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
+import { useNavigation } from "@react-navigation/native";
+import { AuthNavigatorRoutesProps } from "@/routes/auth.routes";
 
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
@@ -9,7 +12,13 @@ import { Input } from "@/components/Input";
 import Logo from "@/assets/logo.svg";
 
 export function SignIn() {
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
+
   const scrollRef = useRef();
+
+  function handleNewAccount() {
+    navigation.navigate("signUp");
+  }
 
   return (
     <KeyboardAwareScrollView
@@ -18,10 +27,11 @@ export function SignIn() {
       ref={scrollRef}
       keyboardShouldPersistTaps="handled"
     >
-      <View className="flex-1 bg-gray-700 px-8">
+      <View className="flex-1 px-8">
         <Image
           className="absolute"
           source={require("@/assets/background.png")}
+          defaultSource={require("@/assets/background.png")}
           alt="Pessoas treinando"
         />
 
@@ -51,7 +61,12 @@ export function SignIn() {
         <View className="mt-8 items-center justify-center">
           <Text className="text-gray-100 mb-4">Ainda não tem acesso?</Text>
         </View>
-        <Button className="mb-8" label="Criar conta" variant="ghost" />
+        <Button
+          className="mb-8"
+          label="Criar conta"
+          variant="ghost"
+          onPress={handleNewAccount}
+        />
       </View>
     </KeyboardAwareScrollView>
   );
