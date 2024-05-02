@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Image, View, Text, KeyboardAvoidingView } from "react-native";
+import { Image, View, Text } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -8,7 +8,7 @@ import { Input } from "@/components/Input";
 
 import Logo from "@/assets/logo.svg";
 
-export function SignIn() {
+export function SignUp() {
   const scrollRef = useRef();
 
   return (
@@ -34,9 +34,10 @@ export function SignIn() {
 
         <View className="flex items-center justify-center">
           <Text className="text-gray-100 font-semibold text-xl mb-6">
-            Acesse sua conta
+            Crie sua conta
           </Text>
 
+          <Input placeholder="Nome" />
           <Input
             placeholder="E-mail"
             keyboardType="email-address"
@@ -45,13 +46,16 @@ export function SignIn() {
           <Input placeholder="Senha" secureTextEntry />
         </View>
 
-        <Button label="Acessar" variant="default" />
+        <Button label="Criar e acessar" variant="default" />
 
         <View className="flex-1" />
-        <View className="mt-8 items-center justify-center">
-          <Text className="text-gray-100 mb-4">Ainda não tem acesso?</Text>
+        <View>
+          <Button
+            className="mt-4 mb-8"
+            label="Voltar para o login"
+            variant="ghost"
+          />
         </View>
-        <Button className="mb-8" label="Criar conta" variant="ghost" />
       </View>
     </KeyboardAwareScrollView>
   );
