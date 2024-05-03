@@ -1,9 +1,11 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
+
+import { HomeHeader } from "@/components/HomeHeader";
 
 export function Home() {
   return (
     <View className="flex-1">
-      <Text>Home</Text>
+      <HomeHeader />
     </View>
   );
 }
