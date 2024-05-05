@@ -46,14 +46,22 @@ export function SignIn() {
           <Text className="text-gray-100 font-semibold text-xl mb-6">
             Acesse sua conta
           </Text>
-
-          <Input
-            placeholder="E-mail"
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <Input placeholder="Senha" secureTextEntry />
         </View>
+
+        <Input
+          label="E-mail"
+          placeholder="Seu e-mail"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          inputClasses="bg-gray-700"
+        />
+        <Input
+          label="Senha"
+          placeholder="Sua senha"
+          secureTextEntry
+          inputClasses="bg-gray-700"
+          className="mb-4"
+        />
 
         <Button label="Acessar" variant="default" />
 

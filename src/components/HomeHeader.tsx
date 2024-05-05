@@ -12,7 +12,7 @@ export function HomeHeader() {
         size={56}
         source={{ uri: "https://github.com/pedrokarnoski.png" }}
       />
-      <View className="flex-1 flex-col">
+      <View className="flex-1 flex-col ml-4">
         <Text className="text-gray-100 text-lg">Olá, </Text>
         <Text className="text-gray-100 font-medium">Pedro</Text>
       </View>

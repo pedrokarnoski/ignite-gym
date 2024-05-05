@@ -9,7 +9,7 @@ export function UserPhoto({ size, ...rest }: UserPhotoProps) {
     <Image
       width={size}
       height={size}
-      className="mr-4 rounded-full border border-gray-400"
+      className="rounded-full border border-gray-400"
       {...rest}
     />
   );
