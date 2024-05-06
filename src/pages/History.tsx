@@ -34,7 +34,7 @@ export function History() {
         )}
         showsVerticalScrollIndicator={false}
         renderSectionHeader={({ section }) => (
-          <Text className="text-gray-100 mt-4 mb-2">{section.title}</Text>
+          <Text className="text-gray-100 mt-6 mb-2">{section.title}</Text>
         )}
         className="px-8"
       />

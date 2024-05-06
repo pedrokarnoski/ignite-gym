@@ -15,9 +15,10 @@ type ExerciseCardProps = TouchableOpacityProps & {};
 export function ExerciseCard({ ...rest }: ExerciseCardProps) {
   return (
     <TouchableOpacity {...rest}>
-      <View className="flex-row bg-gray-500 items-center p-2 pr-4 rounded-md mb-3">
+      <View className="flex-row bg-gray-500 items-center p-2 pr-4 rounded-md mb-4">
         <Image
           className="w-16 h-16 rounded-md mr-4"
+          resizeMode="cover"
           source={{
             uri: "https://www.feitodeiridium.com.br/wp-content/uploads/2016/07/remada-unilateral-3.jpg",
           }}

@@ -20,7 +20,7 @@ const Input = forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
         placeholderTextColor={colors.gray[300]}
         className={cn(
           inputClasses,
-          "text-white py-2.5 px-4 h-14 rounded focus:border focus:border-green-500"
+          "text-white py-2.5 px-4 h-14 rounded-md focus:border focus:border-green-500"
         )}
         {...props}
       />

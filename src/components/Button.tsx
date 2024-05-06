@@ -10,6 +10,7 @@ const buttonVariants = cva(
       variant: {
         default: "bg-green-700",
         ghost: "border border-green-500",
+        link: "underline-offset-4",
       },
       size: {
         default: "h-14 px-4",
@@ -29,6 +30,7 @@ const buttonTextVariants = cva("text-center font-medium", {
     variant: {
       default: "text-white",
       ghost: "text-green-500",
+      link: "text-gray-100",
     },
     size: {
       default: "text-base",
