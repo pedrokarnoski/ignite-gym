@@ -15,7 +15,7 @@ type ExerciseCardProps = TouchableOpacityProps & {};
 export function ExerciseCard({ ...rest }: ExerciseCardProps) {
   return (
     <TouchableOpacity {...rest}>
-      <View className="flex-row bg-gray-500 items-center p-2 pr-4 rounded-md mb-4">
+      <View className="flex-row bg-gray-600 items-center p-2 pr-4 rounded-md mb-4">
         <Image
           className="w-16 h-16 rounded-md mr-4"
           resizeMode="cover"
