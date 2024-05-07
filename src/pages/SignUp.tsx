@@ -5,18 +5,44 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 
 import { useNavigation } from "@react-navigation/native";
 
+import { useForm, Controller } from "react-hook-form";
+
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 
 import Logo from "@/assets/logo.svg";
+
+type FormDataProps = {
+  name: string;
+  email: string;
+  password: string;
+  password_confirm: string;
+};
 
 export function SignUp() {
   const navigation = useNavigation();
 
   const scrollRef = useRef();
 
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      password_confirm: "",
+    },
+  });
+
   function handleGoBack() {
     navigation.goBack();
+  }
+
+  function handleSignUp({ name, email, password, password_confirm }: any) {
+    console.log(data);
   }
 
   return (
@@ -34,7 +60,7 @@ export function SignUp() {
           alt="Pessoas treinando"
         />
 
-        <View className="flex items-center justify-center mb-20">
+        <View className="flex items-center justify-center mb-8">
           <Logo width={200} height={200} />
           <Text className="-mt-20 text-white">
             Treine sua mente e seu corpo
@@ -45,17 +71,93 @@ export function SignUp() {
           <Text className="text-gray-100 font-semibold text-xl mb-6">
             Crie sua conta
           </Text>
-
-          <Input placeholder="Nome" />
-          <Input
-            placeholder="E-mail"
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <Input placeholder="Senha" secureTextEntry />
         </View>
 
-        <Button label="Criar e acessar" variant="default" />
+        <Controller
+          control={control}
+          name="name"
+          rules={{
+            required: {
+              value: true,
+              message: "Digite o nome",
+            },
+          }}
+          render={({ field: { onChange, value } }) => (
+            <Input
+              label="Nome"
+              placeholder="Seu nome completo"
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.name?.message}
+              inputClasses="bg-gray-700"
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="email"
+          rules={{
+            required: "Digite o e-mail.",
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: "E-mail inválido",
+            },
+          }}
+          render={({ field: { onChange, value } }) => (
+            <Input
+              label="E-mail"
+              placeholder="Seu e-mail"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.email?.message}
+              inputClasses="bg-gray-700"
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              label="Senha"
+              placeholder="Sua senha"
+              secureTextEntry
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.password?.message}
+              inputClasses="bg-gray-700"
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="password_confirm"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              label="Confirmar senha"
+              placeholder="Confirme sua senha"
+              secureTextEntry
+              inputClasses="bg-gray-700"
+              onChangeText={onChange}
+              onSubmitEditing={handleSubmit(handleSignUp)}
+              returnKeyType="send"
+              value={value}
+              errorMessage={errors.password_confirm?.message}
+              className="mb-8"
+            />
+          )}
+        />
+
+        <Button
+          label="Criar e acessar"
+          variant="default"
+          onPress={handleSubmit(handleSignUp)}
+        />
 
         <View className="flex-1" />
         <View>
