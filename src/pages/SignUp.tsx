@@ -9,8 +9,12 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
+import { api } from "@/lib/axios";
+import { AppError } from "@/utils/AppError";
+
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
+import { useToast } from "@/components/Toast";
 
 import Logo from "@/assets/logo.svg";
 
@@ -38,6 +42,8 @@ const signUpSchema = yup.object({
 });
 
 export function SignUp() {
+  const { toast } = useToast();
+
   const navigation = useNavigation();
 
   const scrollRef = useRef();
@@ -54,8 +60,21 @@ export function SignUp() {
     navigation.goBack();
   }
 
-  function handleSignUp({ name, email, password, password_confirm }: any) {
-    console.log(data);
+  async function handleSignUp({ name, email, password }: any) {
+    try {
+      await api.post("/users", {
+        name,
+        email,
+        password,
+      });
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const description = isAppError
+        ? error.message
+        : "Não foi possível criar a conta. Tente novamente mais tarde.";
+
+      toast(description, "destructive", 5000);
+    }
   }
 
   return (
