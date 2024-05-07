@@ -6,6 +6,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useNavigation } from "@react-navigation/native";
 
 import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
@@ -19,6 +21,22 @@ type FormDataProps = {
   password_confirm: string;
 };
 
+const signUpSchema = yup.object({
+  name: yup.string().required("O nome é obrigatório"),
+  email: yup
+    .string()
+    .email("Insira um email válido")
+    .required("O email é obrigatório"),
+  password: yup
+    .string()
+    .required("A senha é obrigatória")
+    .min(6, "A senha deve ter no mínimo 6 caracteres"),
+  password_confirm: yup
+    .string()
+    .oneOf([yup.ref("password"), null], "As senhas devem ser iguais")
+    .required("Confirme a senha"),
+});
+
 export function SignUp() {
   const navigation = useNavigation();
 
@@ -29,12 +47,7 @@ export function SignUp() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormDataProps>({
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      password_confirm: "",
-    },
+    resolver: yupResolver(signUpSchema),
   });
 
   function handleGoBack() {
@@ -76,12 +89,6 @@ export function SignUp() {
         <Controller
           control={control}
           name="name"
-          rules={{
-            required: {
-              value: true,
-              message: "Digite o nome",
-            },
-          }}
           render={({ field: { onChange, value } }) => (
             <Input
               label="Nome"
@@ -97,13 +104,6 @@ export function SignUp() {
         <Controller
           control={control}
           name="email"
-          rules={{
-            required: "Digite o e-mail.",
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "E-mail inválido",
-            },
-          }}
           render={({ field: { onChange, value } }) => (
             <Input
               label="E-mail"
