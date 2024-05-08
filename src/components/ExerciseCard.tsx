@@ -8,11 +8,16 @@ import {
 
 import { MaterialIcons } from "@expo/vector-icons";
 
+import { api } from "@/lib/axios";
+import { ExerciseDTO } from "@/dtos/ExerciseDTO";
+
 import { colors } from "@/styles/colors";
 
-type ExerciseCardProps = TouchableOpacityProps & {};
+type ExerciseCardProps = TouchableOpacityProps & {
+  data: ExerciseDTO;
+};
 
-export function ExerciseCard({ ...rest }: ExerciseCardProps) {
+export function ExerciseCard({ data, ...rest }: ExerciseCardProps) {
   return (
     <TouchableOpacity {...rest}>
       <View className="flex-row bg-gray-600 items-center p-2 pr-4 rounded-md mb-4">
@@ -20,14 +25,14 @@ export function ExerciseCard({ ...rest }: ExerciseCardProps) {
           className="w-16 h-16 rounded-md mr-4"
           resizeMode="cover"
           source={{
-            uri: "https://www.feitodeiridium.com.br/wp-content/uploads/2016/07/remada-unilateral-3.jpg",
+            uri: `${api.defaults.baseURL}/exercise/thumb/${data.thumb}`,
           }}
         />
 
         <View className="flex-1">
-          <Text className="text-white text-lg">Remada Unilateral</Text>
+          <Text className="text-white text-lg">{data.name}</Text>
           <Text numberOfLines={2} className="text-gray-100 text-sm">
-            3 séries x 10 repetições
+            {data.series} séries x {data.repetitions} repetições
           </Text>
         </View>
 

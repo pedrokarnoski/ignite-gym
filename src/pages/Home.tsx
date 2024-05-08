@@ -1,33 +1,72 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FlatList, View, Text } from "react-native";
 
-import { useNavigation } from "@react-navigation/native";
+import { api } from "@/lib/axios";
+import { AppError } from "@/utils/AppError";
+import { ExerciseDTO } from "@/dtos/ExerciseDTO";
+
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@/routes/app.routes";
 
 import { HomeHeader } from "@/components/HomeHeader";
 import { Group } from "@/components/Group";
 import { ExerciseCard } from "@/components/ExerciseCard";
+import { useToast } from "@/components/Toast";
 
 export function Home() {
+  const { toast } = useToast();
+
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
-  const [groups, setGroups] = useState([
-    "Costas",
-    "Ombro",
-    "Bíceps",
-    "Tríceps",
-  ]);
-  const [exercises, setExercises] = useState([
-    "Puxada frontal",
-    "Remada unilateral",
-    "Remada curvada",
-    "Levantamento terra",
-  ]);
+  const [groups, setGroups] = useState<string[]>([]);
+  const [exercises, setExercises] = useState<ExerciseDTO[]>([]);
   const [groupSelected, setGroupSelected] = useState("Costas");
 
   function handleOpenExerciseDetails() {
     navigation.navigate("exercise");
   }
+
+  async function fetchGroups() {
+    try {
+      const response = await api.get("/groups");
+
+      setGroups(response.data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const description = isAppError
+        ? error.message
+        : "Não foi possível carregar os grupos. Tente novamente mais tarde.";
+
+      toast(description, "destructive", 5000);
+    }
+  }
+
+  async function fetchExercisesByGroup() {
+    try {
+      const response = await api.get(`/exercises/bygroup/${groupSelected}`);
+
+      setExercises(response.data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const description = isAppError
+        ? error.message
+        : "Não foi possível carregar os exercícios. Tente novamente mais tarde.";
+
+      toast(description, "destructive", 5000);
+    }
+  }
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchExercisesByGroup();
+    }, [groupSelected])
+  );
 
   return (
     <View className="flex-1">
@@ -58,11 +97,11 @@ export function Home() {
 
         <FlatList
           data={exercises}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerClassName="pb-8"
           renderItem={({ item }) => (
-            <ExerciseCard onPress={handleOpenExerciseDetails} />
+            <ExerciseCard onPress={handleOpenExerciseDetails} data={item} />
           )}
         />
       </View>
