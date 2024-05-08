@@ -1,4 +1,11 @@
-import { View, TouchableOpacity, Text, Image, ScrollView } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  Image,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@/routes/app.routes";
@@ -32,6 +39,7 @@ export function Exercise() {
 
   const { exerciseId } = route.params as ExerciseRouteParamsParams;
 
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [exercise, setExercise] = useState<ExerciseDTO>({} as ExerciseDTO);
 
   function handleGoBack() {
@@ -40,6 +48,8 @@ export function Exercise() {
 
   async function fetchExerciseDetails() {
     try {
+      setIsLoading(true);
+
       const response = await api.get(`/exercises/${exerciseId}`);
 
       setExercise(response.data);
@@ -51,6 +61,8 @@ export function Exercise() {
         : "Não foi possível carregar os detalhes do exercício. Tente novamente mais tarde.";
 
       toast(description, "destructive", 5000);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -83,46 +95,52 @@ export function Exercise() {
         </View>
       </View>
 
-      <ScrollView>
-        <View className="p-8">
-          <View className="mb-4 rounded-md overflow-hidden">
-            <Image
-              className="w-full h-80"
-              resizeMode="cover"
-              source={{
-                uri: `${api.defaults.baseURL}/exercise/demo/${exercise.demo}`,
-              }}
-            />
-          </View>
-
-          <View className="bg-gray-600 rounded-md pb-4 px-4">
-            <View className="flex-row justify-around mb-6 mt-4">
-              <View className="flex-row items-center">
-                <SeriesSvg />
-                <Text className="text-gray-200 ml-2">
-                  {exercise.series} séries
-                </Text>
-              </View>
-
-              <View className="flex-row items-center">
-                <RepetitionsSvg />
-                <Text className="text-gray-200 ml-2">
-                  {exercise.repetitions} repetições
-                </Text>
-              </View>
+      {isLoading ? (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator color={colors.green[500]} size="large" />
+        </View>
+      ) : (
+        <ScrollView>
+          <View className="p-8">
+            <View className="mb-4 rounded-md overflow-hidden">
+              <Image
+                className="w-full h-80"
+                resizeMode="cover"
+                source={{
+                  uri: `${api.defaults.baseURL}/exercise/demo/${exercise.demo}`,
+                }}
+              />
             </View>
 
-            <Button label="Marcar como realizado" />
-          </View>
+            <View className="bg-gray-600 rounded-md pb-4 px-4">
+              <View className="flex-row justify-around mb-6 mt-4">
+                <View className="flex-row items-center">
+                  <SeriesSvg />
+                  <Text className="text-gray-200 ml-2">
+                    {exercise.series} séries
+                  </Text>
+                </View>
 
-          <Button
-            variant="link"
-            label="Voltar"
-            className="mt-1"
-            onPress={handleGoBack}
-          />
-        </View>
-      </ScrollView>
+                <View className="flex-row items-center">
+                  <RepetitionsSvg />
+                  <Text className="text-gray-200 ml-2">
+                    {exercise.repetitions} repetições
+                  </Text>
+                </View>
+              </View>
+
+              <Button label="Marcar como realizado" />
+            </View>
+
+            <Button
+              variant="link"
+              label="Voltar"
+              className="mt-1"
+              onPress={handleGoBack}
+            />
+          </View>
+        </ScrollView>
+      )}
     </View>
   );
 }
