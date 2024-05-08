@@ -50,7 +50,7 @@ export function SignIn() {
 
       await signIn(email, password);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       const isAppError = error instanceof AppError;
 
       const description = isAppError

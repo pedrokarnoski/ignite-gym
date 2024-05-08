@@ -1,24 +1,62 @@
 import { View, TouchableOpacity, Text, Image, ScrollView } from "react-native";
 
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@/routes/app.routes";
+
+import { api } from "@/lib/axios";
+import { AppError } from "@/utils/AppError";
 
 import { MaterialIcons } from "@expo/vector-icons";
 
-import { colors } from "@/styles/colors";
-
 import { Button } from "@/components/Button";
+import { useToast } from "@/components/Toast";
+
+import { colors } from "@/styles/colors";
 
 import BodySvg from "@/assets/body.svg";
 import SeriesSvg from "@/assets/series.svg";
 import RepetitionsSvg from "@/assets/repetitions.svg";
+import { useEffect, useState } from "react";
+import { ExerciseDTO } from "@/dtos/ExerciseDTO";
+
+type ExerciseRouteParamsParams = {
+  exerciseId: string;
+};
 
 export function Exercise() {
+  const { toast } = useToast();
+
   const navigation = useNavigation<AppNavigatorRoutesProps>();
+
+  const route = useRoute();
+
+  const { exerciseId } = route.params as ExerciseRouteParamsParams;
+
+  const [exercise, setExercise] = useState<ExerciseDTO>({} as ExerciseDTO);
 
   function handleGoBack() {
     navigation.goBack();
   }
+
+  async function fetchExerciseDetails() {
+    try {
+      const response = await api.get(`/exercises/${exerciseId}`);
+
+      setExercise(response.data);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const description = isAppError
+        ? error.message
+        : "Não foi possível carregar os detalhes do exercício. Tente novamente mais tarde.";
+
+      toast(description, "destructive", 5000);
+    }
+  }
+
+  useEffect(() => {
+    fetchExerciseDetails();
+  }, [exerciseId]);
 
   return (
     <View className="flex-1">
@@ -33,13 +71,13 @@ export function Exercise() {
 
         <View className="flex-row justify-between mb-8 items-center">
           <Text className="text-gray-100 text-xl font-bold shrink">
-            Puxada frontal
+            {exercise.name}
           </Text>
 
           <View className="flex-row items-center">
             <BodySvg />
             <Text className="text-gray-200 ml-1 capitalize">
-              Puxada frontal
+              {exercise.group}
             </Text>
           </View>
         </View>
@@ -47,24 +85,30 @@ export function Exercise() {
 
       <ScrollView>
         <View className="p-8">
-          <Image
-            className="w-full h-80 mb-4 rounded-md"
-            resizeMode="cover"
-            source={{
-              uri: "https://www.feitodeiridium.com.br/wp-content/uploads/2016/07/remada-unilateral-3.jpg",
-            }}
-          />
+          <View className="mb-4 rounded-md overflow-hidden">
+            <Image
+              className="w-full h-80"
+              resizeMode="cover"
+              source={{
+                uri: `${api.defaults.baseURL}/exercise/demo/${exercise.demo}`,
+              }}
+            />
+          </View>
 
           <View className="bg-gray-600 rounded-md pb-4 px-4">
             <View className="flex-row justify-around mb-6 mt-4">
               <View className="flex-row items-center">
                 <SeriesSvg />
-                <Text className="text-gray-200 ml-2">3 séries</Text>
+                <Text className="text-gray-200 ml-2">
+                  {exercise.series} séries
+                </Text>
               </View>
 
               <View className="flex-row items-center">
                 <RepetitionsSvg />
-                <Text className="text-gray-200 ml-2">10 repetições</Text>
+                <Text className="text-gray-200 ml-2">
+                  {exercise.repetitions} repetições
+                </Text>
               </View>
             </View>
 
