@@ -3,6 +3,8 @@ import { Image, View, Text } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
+import { Controller, useForm } from "react-hook-form";
+
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorRoutesProps } from "@/routes/auth.routes";
 
@@ -31,6 +33,12 @@ export function SignIn() {
   const scrollRef = useRef();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>();
 
   function handleNewAccount() {
     navigation.navigate("signUp");
@@ -83,26 +91,45 @@ export function SignIn() {
           </Text>
         </View>
 
-        <Input
-          label="E-mail"
-          placeholder="Seu e-mail"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          inputClasses="bg-gray-700"
+        <Controller
+          control={control}
+          name="email"
+          rules={{ required: "Informe o e-mail" }}
+          render={({ field: { onChange } }) => (
+            <Input
+              label="E-mail"
+              placeholder="Seu e-mail"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              inputClasses="bg-gray-700"
+              onChangeText={onChange}
+              errorMessage={errors.email?.message}
+            />
+          )}
         />
-        <Input
-          label="Senha"
-          placeholder="Sua senha"
-          secureTextEntry
-          inputClasses="bg-gray-700"
-          className="mb-4"
+
+        <Controller
+          control={control}
+          name="password"
+          rules={{ required: "Informe a senha" }}
+          render={({ field: { onChange } }) => (
+            <Input
+              label="Senha"
+              placeholder="Sua senha"
+              secureTextEntry
+              inputClasses="bg-gray-700"
+              className="mb-4"
+              onChangeText={onChange}
+              errorMessage={errors.password?.message}
+            />
+          )}
         />
 
         <Button
           label="Acessar"
           variant="default"
           isLoading={isLoading}
-          onPress={handleSignIn}
+          onPress={handleSubmit(handleSignIn)}
         />
 
         <View className="flex-1" />

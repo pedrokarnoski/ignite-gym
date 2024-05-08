@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Image, View, Text } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -11,6 +11,7 @@ import * as yup from "yup";
 
 import { api } from "@/lib/axios";
 import { AppError } from "@/utils/AppError";
+import { useAuth } from "@/hooks/useAuth";
 
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
@@ -44,9 +45,13 @@ const signUpSchema = yup.object({
 export function SignUp() {
   const { toast } = useToast();
 
+  const { signIn } = useAuth();
+
   const navigation = useNavigation();
 
   const scrollRef = useRef();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     control,
@@ -62,11 +67,15 @@ export function SignUp() {
 
   async function handleSignUp({ name, email, password }: any) {
     try {
+      setIsLoading(true);
+
       await api.post("/users", {
         name,
         email,
         password,
       });
+
+      await signIn(email, password);
     } catch (error) {
       const isAppError = error instanceof AppError;
       const description = isAppError
@@ -184,6 +193,7 @@ export function SignUp() {
             className="mt-4 mb-8"
             label="Voltar para o login"
             variant="ghost"
+            isLoading={isLoading}
             onPress={handleGoBack}
           />
         </View>

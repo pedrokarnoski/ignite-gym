@@ -2,6 +2,7 @@ import { type VariantProps, cva } from "class-variance-authority";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 import { cn } from "../lib/utils";
+import { colors } from "@/styles/colors";
 
 const buttonVariants = cva(
   "flex flex-row items-center justify-center rounded-md",
@@ -69,7 +70,7 @@ function Button({
         )}
       >
         {isLoading ? (
-          <ActivityIndicator color="white" size="small" />
+          <ActivityIndicator color={colors.white} size="small" />
         ) : (
           <Text
             className={cn(
