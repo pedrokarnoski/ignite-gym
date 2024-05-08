@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Image, View, Text } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -6,18 +6,53 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorRoutesProps } from "@/routes/auth.routes";
 
+import { useAuth } from "@/hooks/useAuth";
+
+import { AppError } from "@/utils/AppError";
+
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
+import { useToast } from "@/components/Toast";
 
 import Logo from "@/assets/logo.svg";
 
+type FormData = {
+  email: string;
+  password: string;
+};
+
 export function SignIn() {
+  const { toast } = useToast();
+
+  const { signIn } = useAuth();
+
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
 
   const scrollRef = useRef();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   function handleNewAccount() {
     navigation.navigate("signUp");
+  }
+
+  async function handleSignIn({ email, password }: FormData) {
+    try {
+      setIsLoading(true);
+
+      await signIn(email, password);
+    } catch (error) {
+      console.log(error);
+      const isAppError = error instanceof AppError;
+
+      const description = isAppError
+        ? error.message
+        : "Não foi possível entrar. Tente novamente mais tarde.";
+
+      toast(description, "destructive", 5000);
+
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -63,7 +98,12 @@ export function SignIn() {
           className="mb-4"
         />
 
-        <Button label="Acessar" variant="default" />
+        <Button
+          label="Acessar"
+          variant="default"
+          isLoading={isLoading}
+          onPress={handleSignIn}
+        />
 
         <View className="flex-1" />
         <View className="mt-8 items-center justify-center">
