@@ -73,9 +73,6 @@ export function Profile() {
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
-  const [userPhoto, setUserPhoto] = useState(
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyQ2EXjnw4zvNBp0bTe_-94DSG9QGLmQVfglHYIeQzcA&s"
-  );
 
   async function handleProfileUpdate(data: FormDataProps) {
     try {
@@ -127,12 +124,45 @@ export function Profile() {
           return;
         }
 
-        setUserPhoto(photoSelected.assets[0].uri);
+        const fileExtension = photoSelected.assets[0].uri.split(".").pop();
 
-        toast("Imagem alterada", "success", 3000);
+        const photoFile = {
+          name: `${user.name}.${fileExtension}`
+            .toLowerCase()
+            .trim()
+            .replaceAll(" ", "-"),
+          uri: photoSelected.assets[0].uri,
+          type: photoSelected.assets[0].mimeType,
+        } as any;
+
+        const userPhotoUploadForm = new FormData();
+        userPhotoUploadForm.append("avatar", photoFile);
+
+        const avatarUpdatedResponse = await api.patch(
+          "/users/avatar",
+          userPhotoUploadForm,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        const userUpdated = user;
+        userUpdated.avatar = avatarUpdatedResponse.data.avatar;
+
+        updateUserProfile(userUpdated);
+
+        toast("Foto atualizada!", "success", 3000);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const description = isAppError
+        ? error.message
+        : "Não foi possível atualizar a foto. Tente novamente mais tarde.";
+
+      toast(description, "destructive", 5000);
     } finally {
       setPhotoIsLoading(false);
     }
@@ -147,7 +177,14 @@ export function Profile() {
           {photoIsLoading ? (
             <Skeleton className="w-36 h-36 bg-gray-300 rounded-full" />
           ) : (
-            <UserPhoto size={124} source={{ uri: userPhoto }} />
+            <UserPhoto
+              size={124}
+              source={
+                user.avatar
+                  ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+                  : require("@/assets/userPhotoDefault.png")
+              }
+            />
           )}
 
           <TouchableOpacity onPress={handleUserPhotoSelect}>

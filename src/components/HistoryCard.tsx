@@ -14,7 +14,7 @@ export function HistoryCard({ data }: HistoryCardProps) {
         </Text>
 
         <Text numberOfLines={1} className="text-gray-100 text-lg">
-          {data.group}
+          {data.group.charAt(0).toUpperCase() + data.group.slice(1)}
         </Text>
       </View>
       <Text className="text-gray-300">{data.hour}</Text>

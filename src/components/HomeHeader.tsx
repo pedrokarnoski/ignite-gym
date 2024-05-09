@@ -2,10 +2,12 @@ import { View, Text, TouchableOpacity } from "react-native";
 
 import { UserPhoto } from "./UserPhoto";
 
+import { useAuth } from "@/hooks/useAuth";
+
+import { api } from "@/lib/axios";
+
 import { MaterialIcons } from "@expo/vector-icons";
 import { colors } from "@/styles/colors";
-
-import { useAuth } from "@/hooks/useAuth";
 
 export function HomeHeader() {
   const { user, signOut } = useAuth();
@@ -16,7 +18,7 @@ export function HomeHeader() {
         size={56}
         source={
           user.avatar
-            ? { uri: user.avatar }
+            ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
             : require("@/assets/userPhotoDefault.png")
         }
       />
