@@ -73,7 +73,7 @@ export function Exercise() {
 
       await api.post("/history", { exercise_id: exerciseId });
 
-      toast("Parabéns! Exercício marcado como realizado.", "success", 5000);
+      toast("Parabéns! Exercício marcado como realizado.", "success", 3000);
 
       navigation.navigate("history");
     } catch (error) {

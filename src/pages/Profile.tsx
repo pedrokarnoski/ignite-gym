@@ -3,6 +3,15 @@ import { ScrollView, TouchableOpacity, View, Text } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import * as yup from "yup";
+
+import { api } from "@/lib/axios";
+import { AppError } from "@/utils/AppError";
+
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import { useAuth } from "@/hooks/useAuth";
 
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { UserPhoto } from "@/components/UserPhoto";
@@ -11,13 +20,87 @@ import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { useToast } from "@/components/Toast";
 
+type FormDataProps = {
+  name: string;
+  email: string;
+  password: string;
+  old_password: string;
+  confirm_password: string;
+};
+
+const profileSchema = yup.object({
+  name: yup.string().required("O nome é obrigatório"),
+  // email: yup.string().email("Insira um email válido"),
+  password: yup
+    .string()
+    .min(6, "A senha deve ter no mínimo 6 caracteres")
+    .nullable()
+    .transform((value) => (!!value ? value : null)),
+  // old_password: yup
+  //   .string()
+  //   .min(6, "A senha antiga deve ter no mínimo 6 caracteres"),
+  confirm_password: yup
+    .string()
+    .nullable()
+    .transform((value) => (!!value ? value : null))
+    .oneOf([yup.ref("password"), null], "As senhas devem ser iguais.")
+    .when("password", {
+      is: (field: any) => field,
+      then: (schema) =>
+        schema
+          .nullable()
+          .required("Confirme a senha")
+          .transform((value) => (!!value ? value : null)),
+    }),
+});
+
 export function Profile() {
   const { toast } = useToast();
 
+  const { user, updateUserProfile } = useAuth();
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
+    defaultValues: {
+      name: user.name,
+      email: user.email,
+    },
+    resolver: yupResolver(profileSchema),
+  });
+
+  const [isUpdating, setIsUpdating] = useState(false);
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState(
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyQ2EXjnw4zvNBp0bTe_-94DSG9QGLmQVfglHYIeQzcA&s"
   );
+
+  async function handleProfileUpdate(data: FormDataProps) {
+    try {
+      setIsUpdating(true);
+
+      const userUpdated = user;
+      userUpdated.name = data.name;
+
+      await api.put("/users", data);
+
+      await updateUserProfile(userUpdated);
+
+      toast("Perfil atualizado!", "success", 3000);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const description = isAppError
+        ? error.message
+        : "Não foi possível atualizar o perfil. Tente novamente mais tarde.";
+
+      toast(description, "destructive", 5000);
+    } finally {
+      setIsUpdating(false);
+    }
+  }
 
   async function handleUserPhotoSelect() {
     setPhotoIsLoading(true);
@@ -75,16 +158,33 @@ export function Profile() {
         </View>
 
         <View className="px-8">
-          <Input
-            label="Nome"
-            placeholder="Seu nome"
-            inputClasses="bg-gray-600"
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { value, onChange } }) => (
+              <Input
+                label="Nome"
+                placeholder="Seu nome"
+                inputClasses="bg-gray-600"
+                onChangeText={onChange}
+                value={value}
+                errorMessage={errors.name?.message}
+              />
+            )}
           />
-          <Input
-            label="E-mail"
-            value="pedrokarnoski@gmail.com"
-            editable={false}
-            inputClasses="bg-gray-600"
+
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { value, onChange } }) => (
+              <Input
+                label="E-mail"
+                editable={false}
+                inputClasses="bg-gray-600"
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
           />
         </View>
 
@@ -93,26 +193,57 @@ export function Profile() {
             Alterar senha
           </Text>
 
-          <Input
-            label="Senha antiga"
-            placeholder="Sua senha antiga"
-            inputClasses="bg-gray-600"
-            secureTextEntry
-          />
-          <Input
-            label="Nova senha"
-            placeholder="Sua nova senha"
-            inputClasses="bg-gray-600"
-            secureTextEntry
-          />
-          <Input
-            label="Confirmar senha"
-            placeholder="Confirme sua senha"
-            inputClasses="bg-gray-600"
-            secureTextEntry
+          <Controller
+            control={control}
+            name="old_password"
+            render={({ field: { onChange } }) => (
+              <Input
+                label="Senha antiga"
+                placeholder="Sua senha antiga"
+                secureTextEntry
+                inputClasses="bg-gray-600"
+                onChangeText={onChange}
+                errorMessage={errors.old_password?.message}
+              />
+            )}
           />
 
-          <Button label="Atualizar" className="my-4" />
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange } }) => (
+              <Input
+                label="Nova senha"
+                placeholder="Sua nova senha"
+                secureTextEntry
+                inputClasses="bg-gray-600"
+                onChangeText={onChange}
+                errorMessage={errors.password?.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="confirm_password"
+            render={({ field: { onChange } }) => (
+              <Input
+                label="Confirmar senha"
+                placeholder="Confirme sua senha"
+                secureTextEntry
+                inputClasses="bg-gray-600"
+                onChangeText={onChange}
+                errorMessage={errors.confirm_password?.message}
+              />
+            )}
+          />
+
+          <Button
+            label="Atualizar"
+            className="my-4"
+            isLoading={isUpdating}
+            onPress={handleSubmit(handleProfileUpdate)}
+          />
         </View>
       </ScrollView>
     </View>

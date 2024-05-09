@@ -1,5 +1,5 @@
-import { HistoryDTO } from "@/dtos/HistoryDTO";
 import { View, Text } from "react-native";
+import { HistoryDTO } from "@/dtos/HistoryDTO";
 
 type HistoryCardProps = {
   data: HistoryDTO;

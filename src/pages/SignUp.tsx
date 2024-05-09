@@ -23,7 +23,7 @@ type FormDataProps = {
   name: string;
   email: string;
   password: string;
-  password_confirm: string;
+  confirm_password: string;
 };
 
 const signUpSchema = yup.object({
@@ -36,7 +36,7 @@ const signUpSchema = yup.object({
     .string()
     .required("A senha é obrigatória")
     .min(6, "A senha deve ter no mínimo 6 caracteres"),
-  password_confirm: yup
+  confirm_password: yup
     .string()
     .oneOf([yup.ref("password"), null], "As senhas devem ser iguais")
     .required("Confirme a senha"),
@@ -164,7 +164,7 @@ export function SignUp() {
 
         <Controller
           control={control}
-          name="password_confirm"
+          name="confirm_password"
           render={({ field: { onChange, value } }) => (
             <Input
               label="Confirmar senha"
@@ -175,7 +175,7 @@ export function SignUp() {
               onSubmitEditing={handleSubmit(handleSignUp)}
               returnKeyType="send"
               value={value}
-              errorMessage={errors.password_confirm?.message}
+              errorMessage={errors.confirm_password?.message}
               className="mb-8"
             />
           )}
