@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -23,7 +24,6 @@ import { colors } from "@/styles/colors";
 import BodySvg from "@/assets/body.svg";
 import SeriesSvg from "@/assets/series.svg";
 import RepetitionsSvg from "@/assets/repetitions.svg";
-import { useEffect, useState } from "react";
 import { ExerciseDTO } from "@/dtos/ExerciseDTO";
 
 type ExerciseRouteParamsParams = {
@@ -40,6 +40,7 @@ export function Exercise() {
   const { exerciseId } = route.params as ExerciseRouteParamsParams;
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [sendingRegister, setSendingRegister] = useState<boolean>(false);
   const [exercise, setExercise] = useState<ExerciseDTO>({} as ExerciseDTO);
 
   function handleGoBack() {
@@ -63,6 +64,28 @@ export function Exercise() {
       toast(description, "destructive", 5000);
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function handleExerciseHistoryRegister() {
+    try {
+      setSendingRegister(true);
+
+      await api.post("/history", { exercise_id: exerciseId });
+
+      toast("Parabéns! Exercício marcado como realizado.", "success", 5000);
+
+      navigation.navigate("history");
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+
+      const description = isAppError
+        ? error.message
+        : "Não foi possível registrar o exercício. Tente novamente mais tarde.";
+
+      toast(description, "destructive", 5000);
+    } finally {
+      setSendingRegister(false);
     }
   }
 
@@ -129,7 +152,11 @@ export function Exercise() {
                 </View>
               </View>
 
-              <Button label="Marcar como realizado" />
+              <Button
+                label="Marcar como realizado"
+                isLoading={sendingRegister}
+                onPress={handleExerciseHistoryRegister}
+              />
             </View>
 
             <Button

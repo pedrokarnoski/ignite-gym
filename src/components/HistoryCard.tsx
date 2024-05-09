@@ -1,16 +1,23 @@
+import { HistoryDTO } from "@/dtos/HistoryDTO";
 import { View, Text } from "react-native";
 
-export function HistoryCard() {
+type HistoryCardProps = {
+  data: HistoryDTO;
+};
+
+export function HistoryCard({ data }: HistoryCardProps) {
   return (
     <View className="flex-row w-full px-4 py-4 mb-4 bg-gray-600 rounded-md items-center justify-between">
       <View className="flex-1">
-        <Text className="text-white capitalize text-xl font-bold">Costas</Text>
+        <Text className="text-white capitalize text-xl font-bold">
+          {data.name}
+        </Text>
 
         <Text numberOfLines={1} className="text-gray-100 text-lg">
-          Puxada frontal
+          {data.group}
         </Text>
       </View>
-      <Text className="text-gray-300">17:21</Text>
+      <Text className="text-gray-300">{data.hour}</Text>
     </View>
   );
 }
