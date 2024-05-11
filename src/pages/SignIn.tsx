@@ -37,6 +37,7 @@ export function SignIn() {
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormData>();
 
@@ -57,6 +58,11 @@ export function SignIn() {
         : "Não foi possível entrar. Tente novamente mais tarde.";
 
       toast(description, "destructive", 5000);
+
+      reset({
+        email: "",
+        password: "",
+      });
 
       setIsLoading(false);
     }
@@ -94,13 +100,14 @@ export function SignIn() {
           control={control}
           name="email"
           rules={{ required: "Informe o e-mail" }}
-          render={({ field: { onChange } }) => (
+          render={({ field: { value, onChange } }) => (
             <Input
               label="E-mail"
               placeholder="Seu e-mail"
               keyboardType="email-address"
               autoCapitalize="none"
               inputClasses="bg-gray-700"
+              value={value}
               onChangeText={onChange}
               errorMessage={errors.email?.message}
             />
@@ -111,13 +118,14 @@ export function SignIn() {
           control={control}
           name="password"
           rules={{ required: "Informe a senha" }}
-          render={({ field: { onChange } }) => (
+          render={({ field: { value, onChange } }) => (
             <Input
               label="Senha"
               placeholder="Sua senha"
               secureTextEntry
               inputClasses="bg-gray-700"
               className="mb-4"
+              value={value}
               onChangeText={onChange}
               errorMessage={errors.password?.message}
             />
