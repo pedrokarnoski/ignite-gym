@@ -10,6 +10,13 @@ A API necessária para integração com o aplicativo está incluída neste repos
 
 O Ignite Gym é uma aplicação simples para gerenciar seus treinos. Ele permite que você visualize sua ficha de treino, marque exercícios como concluído e visualize seu histórico, também é possível editar seu perfil.
 
+<div style="overflow-x: auto; white-space: nowrap;">
+  <img src="https://github.com/pedrokarnoski/ignite-gym/assets/66481193/f965b91c-6e3c-4241-b340-57f3cfbb052a" alt="Imagem 1" style="width: 230px; height: auto; display: inline-block;" />
+  <img src="https://github.com/pedrokarnoski/ignite-gym/assets/66481193/bde6a9df-87ba-4de0-b774-1f9032f4e2f3" alt="Imagem 2" style="width: 230px; height: auto; display: inline-block;" />
+  <img src="https://github.com/pedrokarnoski/ignite-gym/assets/66481193/0414da78-f797-4572-91af-b912942251cf" alt="Imagem 2" style="width: 230px; height: auto; display: inline-block;" />
+  <img src="https://github.com/pedrokarnoski/ignite-gym/assets/66481193/674a4f24-5e29-4865-9028-a3fd526e74d5" alt="Imagem 2" style="width: 230px; height: auto; display: inline-block;" />
+</div>
+
 ## Tecnologias utilizadas
 
 - **Expo**: O projeto foi criado utilizando o Expo, uma plataforma que simplifica o desenvolvimento de aplicativos móveis, permitindo a construção rápida e eficiente de apps para Android e iOS utilizando JavaScript e React Native.
